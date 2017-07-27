@@ -186,14 +186,31 @@ class QhGsxtSpider(scrapy.Spider):
                 'cookiejar': md5(search_word).hexdigest(),
                 'searchword': search_word,
             }
+            headers = self.headers
+            headers.update({
+                # 'Referer': self.index_url, #不从index_url开始访问，则不能放置头部的referer
+                'X-Requested-With': 'XMLHttpRequest',
+            })
+            t = self._get_timestamp()
+
             yield scrapy.Request(
-                url=self.index_url,
-                callback=self.fun1,
+                url=self.register_validate_url % t,
                 method='GET',
                 dont_filter=True,
-                headers=self.headers,
+                headers=headers,
                 meta=meta,
+                callback=self.fun2,
+                errback=self.recall,
             )
+
+            # yield scrapy.Request(
+            #     url=self.index_url,
+            #     callback=self.fun1,
+            #     method='GET',
+            #     dont_filter=True,
+            #     headers=headers,
+            #     meta=meta,
+            # )
 
     def fun1(self, response):
         print 'begin fun1'
@@ -201,7 +218,7 @@ class QhGsxtSpider(scrapy.Spider):
         t = self._get_timestamp()
         headers = self.headers
         headers.update({
-            'Referer': self.index_url,
+            # 'Referer': self.index_url,
             'X-Requested-With': 'XMLHttpRequest',
         })
 
@@ -222,7 +239,7 @@ class QhGsxtSpider(scrapy.Spider):
 
         json_response = json.loads(response.body)
         success = json_response['success']
-        gt = json_response['gt']
+        # gt = json_response['gt']
         challenge = json_response['challenge']
 
         if success == 0:
