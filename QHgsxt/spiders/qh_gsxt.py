@@ -18,6 +18,12 @@ class QhGsxtSpider(scrapy.Spider):
     search_words = [
         '好宜家超市',
         '开心便利超市',
+        '动力',
+        '创美',
+        '富力',
+        '国美',
+        '新泰',
+        '山水',
     ]
 
     index_url = 'http://qh.gsxt.gov.cn/index.jspx'
